@@ -92,7 +92,7 @@ uint8_t InitFireSubHSM(void)
     CurrentState = InitPSubState;
     DetectedCount = 0;
     shotsFired = 0;
-    RC_Init();
+//    RC_Init();
     returnEvent = RunFireSubHSM(INIT_EVENT);
     if (returnEvent.EventType == ES_NO_EVENT) {
         return TRUE;
@@ -261,56 +261,69 @@ ES_Event RunFireSubHSM(ES_Event ThisEvent)
         printf("RC kicked!!\r\n");
         switch(ThisEvent.EventType){
             case ES_ENTRY:
+                Fire(FIREON);
+                nextState = GOALIE_NOT_DETECTED;
+                makeTransition = TRUE;
+                ThisEvent.EventType = ES_NO_EVENT;
 //                Fire(FIREOFF);
 //                ES_Timer_InitTimer(CHARGE_TIMER, 200);
-                Fire(FIREOFF);
-                DELAY(A_LOT);
-                Fire(FIREON);
-                DELAY(A_LOT);
-                Fire(FIREOFF);
-                DELAY(A_LOT);
-                Fire(FIREON);
-                DELAY(A_LOT);
-                Fire(FIREOFF);
-                DELAY(A_LOT);
-                Fire(FIREON);
-                DELAY(A_LOT);
+//                Fire(FIREOFF);
+//                DELAY(A_LOT);
+//                Fire(FIREON);
+//                DELAY(A_LOT);
+//                Fire(FIREOFF);
+//                DELAY(A_LOT);
+//                Fire(FIREON);
+//                DELAY(A_LOT);
+//                Fire(FIREOFF);
+//                DELAY(A_LOT);
+//                Fire(FIREON);
+//                DELAY(A_LOT);
 
-                nextState = ExitSub;
-                makeTransition = TRUE;
-                ThisEvent.EventType = OUTOFAMMO;
-                printf("\r\n Leaving charge state");
-                
-            break;
-
-//            case GOALIE_NOT_DETECTED:
-//                Fire(FIREOFF);
-//                DELAY(A_LOT);
-//                Fire(FIREON);
-//                DELAY(A_LOT);
-//                Fire(FIREOFF);
-//                DELAY(A_LOT);
-//                Fire(FIREON);
-//                DELAY(A_LOT);
-//                Fire(FIREOFF);
-//                DELAY(A_LOT);
-//                Fire(FIREON);
-//                DELAY(A_LOT);
-//
 //                nextState = ExitSub;
 //                makeTransition = TRUE;
 //                ThisEvent.EventType = OUTOFAMMO;
 //                printf("\r\n Leaving charge state");
-//            break;
-//            case ES_TIMEOUT:
-//                if (ThisEvent.EventParam = CHARGE_TIMER ){
-//                    printf("FIRED OFF\r\n");
-//                    nextState = ChargeState;
-//                    shotsFired++;
-//                    makeTransition = TRUE;
-//                    ThisEvent.EventType = ES_NO_EVENT;
-//                }
-//            break;
+//                
+            break;
+
+            case GOALIE_NOT_DETECTED:
+                Fire(FIREOFF);
+                ES_Timer_InitTimer(FIRE_TIMER, 200);
+//                Fire(FIREOFF);
+//                DELAY(A_LOT);
+//                Fire(FIREON);
+//                DELAY(A_LOT);
+//                Fire(FIREOFF);
+//                DELAY(A_LOT);
+//                Fire(FIREON);
+//                DELAY(A_LOT);
+//                Fire(FIREOFF);
+//                DELAY(A_LOT);
+//                Fire(FIREON);
+//                DELAY(A_LOT);
+
+                nextState = ES_TIMEOUT;
+                makeTransition = TRUE;
+                ThisEvent.EventType = ES_NO_EVENT; // Added this because it
+                //should always return no event when the event is consumed.
+//                ThisEvent.EventType = OUTOFAMMO;
+//                printf("\r\n Leaving charge state");
+            break;
+            case ES_TIMEOUT:
+                if (ThisEvent.EventParam = FIRE_TIMER){
+                    if (shotsFired == 3){
+                        nextState = ExitSub;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    printf("FIRED OFF\r\n");
+                    nextState = ChargeState;
+                    shotsFired++;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                }
+            break;
             default:break;
         }
         break;
@@ -318,7 +331,7 @@ ES_Event RunFireSubHSM(ES_Event ThisEvent)
 
     
     case ExitSub:
-        if (ThisEvent.EventType == ES_ENTRY){
+//        if (ThisEvent.EventType == ES_ENTRY){
             Stop();
             Charge(0);
             Fire(FIREON);
@@ -326,7 +339,7 @@ ES_Event RunFireSubHSM(ES_Event ThisEvent)
             makeTransition = TRUE;
             ThisEvent.EventType = OUTOFAMMO;
             ES_Timer_StopTimer(CHARGE_TIMER);
-        }
+//        }
         break;
     default: // all unhandled states fall into here
         break;

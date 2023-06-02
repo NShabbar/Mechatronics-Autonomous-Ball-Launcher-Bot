@@ -4,74 +4,74 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/AD.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/BOARD.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/DriveBase.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/ES_CheckEvents.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/ES_Configure.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/ES_Events.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/ES_Framework.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/ES_General.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/ES_KeyboardInput.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/ES_LookupTables.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/ES_Port.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/ES_PostList.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/ES_PriorTables.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/ES_Queue.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/ES_ServiceHeaders.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/ES_TattleTale.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/ES_Timers.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/EngageSubHSM1.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/IO_Ports.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/LED.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/MainHSM.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/RC_Servo.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/SearchSubHSM1.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/SensorService.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/Stepper.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/pwm.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/roach.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/serial.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/timers.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/FireSubHSM.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/DriveHomeSubHSM.h</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/include/NavigateLoadHSM.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/AD.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/BOARD.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/DriveBase.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/DriveHomeSubHSM.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/EngageSubHSM1.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/ES_CheckEvents.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/ES_Configure.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/ES_Events.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/ES_Framework.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/ES_General.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/ES_KeyboardInput.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/ES_LookupTables.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/ES_Port.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/ES_PostList.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/ES_PriorTables.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/ES_Queue.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/ES_ServiceHeaders.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/ES_TattleTale.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/ES_Timers.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/FireSubHSM.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/IO_Ports.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/LED.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/MainHSM.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/NavigateLoadHSM.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/pwm.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/RC_Servo.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/roach.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/SearchSubHSM1.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/SensorService.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/serial.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/Stepper.h</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/include/timers.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
-      <itemPath>C:/ECE118/bootloader320.ld</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/bootloader320.ld</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/AD.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/BOARD.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/DriveBase.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/ES_CheckEvents.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/ES_Framework.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/ES_KeyboardInput.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/ES_PostList.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/ES_Queue.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/ES_TattleTale.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/ES_Timers.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/EngageSubHSM1.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/IO_Ports.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/LED.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/MainHSM.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/RC_Servo.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/SearchSubHSM1.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/SensorService.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/Stepper.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/pwm.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/roach.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/serial.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/timers.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ProjectCode.X/HelloWorldMain.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/templates/TemplateES_Main.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/FireSubHSM.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/DriveHomeSubHSM.c</itemPath>
-      <itemPath>C:/Users/lusukim/Desktop/ECE118/src/NavigateLoadHSM.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/AD.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/BOARD.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/DriveBase.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/DriveHomeSubHSM.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/EngageSubHSM1.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/ES_CheckEvents.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/ES_Framework.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/ES_KeyboardInput.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/ES_PostList.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/ES_Queue.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/ES_TattleTale.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/ES_Timers.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/FireSubHSM.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/IO_Ports.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/LED.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/MainHSM.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/NavigateLoadHSM.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/pwm.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/RC_Servo.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/roach.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/SearchSubHSM1.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/SensorService.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/serial.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/Stepper.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/src/timers.c</itemPath>
+      <itemPath>HelloWorldMain.c</itemPath>
+      <itemPath>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118/templates/TemplateES_Main.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -86,6 +86,8 @@
     <Elem>C:\ECE118</Elem>
     <Elem>C:\Users\lusukim\Desktop\ProjectCode.X</Elem>
     <Elem>C:\Users\lusukim\Desktop\ECE118\templates</Elem>
+    <Elem>C:/Users/Nadia/OneDrive/Desktop/ECE118/118-final-project/ECE118</Elem>
+    <Elem>.</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -97,7 +99,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>noID</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>4.10</languageToolchainVersion>
+        <languageToolchainVersion>4.00</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
@@ -123,7 +125,7 @@
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>true</makeCustomizationPreStepEnabled>
         <makeUseCleanTarget>false</makeUseCleanTarget>
-        <makeCustomizationPreStep>python C:\Users\lusukim\Desktop\ECE118\scripts\Enum_To_String.py</makeCustomizationPreStep>
+        <makeCustomizationPreStep>python C:\Users\Nadia\OneDrive\Desktop\ECE118\118-final-project\ECE118\scripts\Enum_To_String.py</makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>false</makeCustomizationPostStepEnabled>
         <makeCustomizationPostStep></makeCustomizationPostStep>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
@@ -267,41 +269,7 @@
         <property key="stack-smashing" value=""/>
         <property key="wpo-lto" value="false"/>
       </C32Global>
-      <item path="C:/Users/lusukim/Desktop/ECE118/templates/TemplateES_Main.c"
-            ex="false"
-            overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
-      <item path="C:/Users/lusukim/Desktop/ProjectCode.X/HelloWorldMain.c"
-            ex="true"
-            overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
+      <item path="HelloWorldMain.c" ex="true" overriding="false">
       </item>
       <PICkit3PlatformTool>
         <property key="ADC 1" value="true"/>

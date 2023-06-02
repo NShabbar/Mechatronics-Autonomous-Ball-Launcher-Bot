@@ -48,8 +48,8 @@
 #define BOTLEFTTAPE_W6 PORTW06_BIT
 
 
-#define TOPTRACK_W7 AD_PORTW7
-#define BOTTRACK_W8 AD_PORTW8
+//#define TOPTRACK_W7 AD_PORTW7
+//#define BOTTRACK_W8 AD_PORTW8
 
 // Define the beacon sensors
 #define GOAL_V7 AD_PORTV8
@@ -92,8 +92,8 @@ void DriveBase_Init(void){
 //    AD_AddPins(TOPLEFTTAPE_W4);
 //    AD_AddPins(BOTRIGHTTAPE_W5);
 //    AD_AddPins(BOTLEFTTAPE_W6);
-    AD_AddPins(TOPTRACK_W7);
-    AD_AddPins(BOTTRACK_W8);
+//    AD_AddPins(TOPTRACK_W7);
+//    AD_AddPins(BOTTRACK_W8);
     AD_AddPins(GOAL_V7);
     AD_AddPins(GOALIE_V8);
     IO_PortsSetPortOutputs(PORTX, PIN3);
@@ -266,6 +266,7 @@ char Charge(char newSpeed){
  *
  * @return SUCCESS or ERROR
  */
+
 
 char Fire(int newSpeed){
 //    IO_PortsSetPortOutputs(PORTX, FIREMECH);
@@ -671,34 +672,34 @@ uint8_t ReadTapeSensors(void){
  * 
  * @return True or False
  */
-uint8_t ReadTopTrack(void){
-    static ES_EventTyp_t lastEvent = TRACKNOTTOGGLED;
-    ES_EventTyp_t curEvent;
-    ES_Event thisEvent;
-    uint8_t returnVal = FALSE;
-    unsigned int rawVal = AD_ReadADPin(TOPTRACK_W7);
-    //printf("\r\n track wire adc value!: %u \r\n", rawVal);
-    if(rawVal > 700){
-        curEvent = TOPTRACK_TOGGLED;
-        //printf("\r\nI SMELL TRACK \r\n");
-    } else{
-        curEvent = TRACKNOTTOGGLED;
-        //printf("\r\nI Dont see shit!\r\n");
-    }
-    if (curEvent != lastEvent){
-        thisEvent.EventType = curEvent;
-        thisEvent.EventParam = rawVal;
-        returnVal = TRUE;
-        lastEvent = curEvent;
-
-#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
-        PostMainHSM(thisEvent);
-#else
-        SaveEvent(thisEvent);
-#endif
-    }
-    return returnVal;
-}
+//uint8_t ReadTopTrack(void){
+//    static ES_EventTyp_t lastEvent = TRACKNOTTOGGLED;
+//    ES_EventTyp_t curEvent;
+//    ES_Event thisEvent;
+//    uint8_t returnVal = FALSE;
+//    unsigned int rawVal = AD_ReadADPin(TOPTRACK_W7);
+//    //printf("\r\n track wire adc value!: %u \r\n", rawVal);
+//    if(rawVal > 700){
+//        curEvent = TOPTRACK_TOGGLED;
+//        //printf("\r\nI SMELL TRACK \r\n");
+//    } else{
+//        curEvent = TRACKNOTTOGGLED;
+//        //printf("\r\nI Dont see shit!\r\n");
+//    }
+//    if (curEvent != lastEvent){
+//        thisEvent.EventType = curEvent;
+//        thisEvent.EventParam = rawVal;
+//        returnVal = TRUE;
+//        lastEvent = curEvent;
+//
+//#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
+//        PostMainHSM(thisEvent);
+//#else
+//        SaveEvent(thisEvent);
+//#endif
+//    }
+//    return returnVal;
+//}
 
 /**
  * @brief Reads the bot track wire sensor
@@ -707,31 +708,31 @@ uint8_t ReadTopTrack(void){
  * 
  * @return True or False
  */
-uint8_t ReadBotTrack(void){
-    static ES_EventTyp_t lastEvent = TRACKNOTTOGGLED;
-    ES_EventTyp_t curEvent;
-    ES_Event thisEvent;
-    uint8_t returnVal = FALSE;
-    unsigned int rawVal = AD_ReadADPin(BOTTRACK_W8);
-    if (rawVal > 1000){
-        curEvent = BOTTRACK_TOGGLED;
-    } else{
-        curEvent = TRACKNOTTOGGLED;
-    }
-    if (curEvent != lastEvent){
-        thisEvent.EventType = curEvent;
-        thisEvent.EventParam = rawVal;
-        returnVal = TRUE;
-        lastEvent = curEvent;
-
-#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
-        PostMainHSM(thisEvent);
-#else
-        SaveEvent(thisEvent);
-#endif
-    }
-    return returnVal;
-}
+//uint8_t ReadBotTrack(void){
+//    static ES_EventTyp_t lastEvent = TRACKNOTTOGGLED;
+//    ES_EventTyp_t curEvent;
+//    ES_Event thisEvent;
+//    uint8_t returnVal = FALSE;
+//    unsigned int rawVal = AD_ReadADPin(BOTTRACK_W8);
+//    if (rawVal > 1000){
+//        curEvent = BOTTRACK_TOGGLED;
+//    } else{
+//        curEvent = TRACKNOTTOGGLED;
+//    }
+//    if (curEvent != lastEvent){
+//        thisEvent.EventType = curEvent;
+//        thisEvent.EventParam = rawVal;
+//        returnVal = TRUE;
+//        lastEvent = curEvent;
+//
+//#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
+//        PostMainHSM(thisEvent);
+//#else
+//        SaveEvent(thisEvent);
+//#endif
+//    }
+//    return returnVal;
+//}
 
 // This function performs the goal detection
 uint8_t GoalDetection(void){
