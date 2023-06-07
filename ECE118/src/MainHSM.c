@@ -32,11 +32,17 @@
 #include "ES_Framework.h"
 #include "BOARD.h"
 #include <DriveBase.h>
+#include "IO_Ports.h"
 #include <stdio.h>
 #include "EngageSubHSM1.h"
 #include "SearchSubHSM1.h" //#include all sub state machines called
 #include "FireSubHSM.h"
 #include "DriveHomeSubHSM.h"
+#include "LoadEngageSubHSM.h"
+#include "TwoEngageSubHSM.h"
+#include "CheckCrossSubHSM.h"
+#include "ReverseToWallSubHSM.h"
+#include "ReturnToLoadSubHSM.h"
 #include "RC_Servo.h"
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
@@ -46,7 +52,6 @@
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
-
 
 typedef enum {
     InitPState,
@@ -100,6 +105,7 @@ static uint8_t MyPriority;
 uint8_t InitMainHSM(uint8_t Priority)
 {
     MyPriority = Priority;
+    IO_PortsSetPortInputs(PORTZ, PIN10); // SWITCH
     // put us into the Initial PseudoState
     CurrentState = InitPState;
     // post the initial transition event
@@ -157,10 +163,18 @@ ES_Event RunMainHSM(ES_Event ThisEvent)
             DriveBase_Init();
 
             // Initialize all sub-state machines
+            InitLoadEngageSubHSM();
+            InitCheckCrossSubHSM();
+            InitReverseToWallSubHSM();
             InitSearchSubHSM();
             InitEngageSubHSM();
-            InitFireSubHSM();
+            InitTwoEngageSubHSM();
             InitDriveHomeSubHSM();
+            InitFireSubHSM();
+            InitReturnToLoadSubHSM();
+            
+//            InitFireSubHSM();
+//            InitDriveHomeSubHSM();
             //RC_Init();
             //Fire(0);
             // now put the machine into the actual initial state
@@ -184,13 +198,7 @@ ES_Event RunMainHSM(ES_Event ThisEvent)
                 ThisEvent.EventType = ES_NO_EVENT;
                 //Stop();
                 break;
-        /*
-        case GOAL_DETECTED_FIRE: // If we need to go to state machine v2
-            nextState = FireState1;
-            makeTransition = TRUE;
-            ThisEvent.EventType = ES_NO_EVENT;
-            break;
-        */
+
             default:
                 break;
         }
@@ -207,66 +215,64 @@ ES_Event RunMainHSM(ES_Event ThisEvent)
             makeTransition = TRUE;
             ThisEvent.EventType = ES_NO_EVENT;
 
-            Stop();
+           
             break;
 
-        // Get rid of this case when you are testing state machine version 2
-//        case GOAL_NOT_DETECTED: // When not detecting 2khz
-//            printf("\r\n Transitioning to search state \r\n");
-//            nextState = SearchState;
-//            makeTransition = TRUE;
-//            ThisEvent.EventType = ES_NO_EVENT;
-//            break;
         default:
             break;
         }
-        break;
-        
+    break;
+    
     case FireState:
         ThisEvent = RunFireSubHSM(ThisEvent);
         switch(ThisEvent.EventType){
-            
+          
             case OUTOFAMMO:
+                printf("Going to drive home state\r\n");
+                Charge(0);
+                Fire(80);
                 nextState = DriveHomeState;
                 makeTransition = TRUE;
                 ThisEvent.EventType = ES_NO_EVENT;
-            break;
-            default: break;
+                break;
         }
-    break;
+        break;
+    
     case DriveHomeState:
         ThisEvent = RunDriveHomeSubHSM(ThisEvent);
-        switch(ThisEvent.EventType){
-           
-            case LOAD_ZONE:
-                Forward(50);
-                ES_Timer_InitTimer(ENGAGE_TIMER, 200);
-                
-            break;
-            case ES_TIMEOUT:
-                Stop();
-                nextState = LoadingState;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
+        //printf("Running after drive home state\r\n");
+            switch(ThisEvent.EventType){
+//                case ES_ENTRY:
+//                    Stop(); 
+//                    printf("\r\nSTOPPING IN DRIVE HOME STATE TOP LEVEL");
+//                break;
+                case LOAD_ZONE:
+                    nextState = SearchState;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+
                 break;
-            default: break;
-        }
+                default: break;
+            }
     break;
-    case LoadingState:
-        switch(ThisEvent.EventType){
-            case ES_ENTRY:
-                Stop();
-                ES_Timer_InitTimer(CHARGE_TIMER, 2000);
-                
-            break;
-            case ES_TIMEOUT:
-                nextState = SearchState;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-            break;
-            default:break;
-        }
-    break;
+    
+//    case LoadingState:
+//        switch(ThisEvent.EventType){
+//            case ES_ENTRY:
+//                Stop();
+//                ES_Timer_InitTimer(ENGAGE_TIMER, 3000);
+//            break;
+//            case ES_TIMEOUT:
+//                if(ThisEvent.EventParam == ENGAGE_TIMER){
+//                    nextState = SearchState;
+//                    makeTransition = TRUE;
+//                    ThisEvent.EventType = ES_NO_EVENT;
+//                }
+//            break;
+//            
+//        }
+//        break;
+    
     default: // all unhandled states fall into here
         break;
     } // end switch on Current State

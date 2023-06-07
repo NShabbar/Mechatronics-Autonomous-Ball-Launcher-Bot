@@ -14,7 +14,7 @@ void main(void)
     ES_Return_t ErrorType;
 
     BOARD_Init();
-    DELAY(A_BIT);
+    DELAY(MOTOR_TIME);
     printf("Starting ES Framework Template\r\n");
     printf("using the 2nd Generation Events & Services Framework\r\n");
 

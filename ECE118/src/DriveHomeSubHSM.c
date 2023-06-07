@@ -36,6 +36,8 @@
 #include "DriveBase.h"
 #include <stdio.h>
 #include "DriveHomeSubHSM.h"
+#include "ReverseToWallSubHSM.h"
+#include "ReturnToLoadSubHSM.h"
 
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
@@ -56,50 +58,16 @@
 
 typedef enum {
     InitPSubState,
-    DriveState,
-    RightTapeAdjustState,
-    LeftTapeAdjustState,
-    RightTapeTimeout,
-    LeftTapeTimeout,
-    FrontRightBumpAdjustState,
-    FrontLeftBumpAdjustState,
-    BackLeftBumpAdjustState,
-    BackRightBumpAdjustState,
-    BackTurnLeftAdjust,
-    BackTurnRightAdjust,
-    FrontTurnLeftAdjust,
-    FrontTurnRightAdjust,
-            BoundaryCheckLeft,
-            BoundaryCheckRight,
-            ReOrientate,
-    LoadState,
-    TwoState, 
-    OneState,
+    ReverseToWall,
+    ReturnToLoad,
     ExitSub,
             
 } DriveHomeSubHSMState_t;
 
 static const char *StateNames[] = {
 	"InitPSubState",
-	"DriveState",
-	"RightTapeAdjustState",
-	"LeftTapeAdjustState",
-	"RightTapeTimeout",
-	"LeftTapeTimeout",
-	"FrontRightBumpAdjustState",
-	"FrontLeftBumpAdjustState",
-	"BackLeftBumpAdjustState",
-	"BackRightBumpAdjustState",
-	"BackTurnLeftAdjust",
-	"BackTurnRightAdjust",
-	"FrontTurnLeftAdjust",
-	"FrontTurnRightAdjust",
-	"BoundaryCheckLeft",
-	"BoundaryCheckRight",
-	"ReOrientate",
-	"LoadState",
-	"TwoState",
-	"OneState",
+	"ReverseToWall",
+	"ReturnToLoad",
 	"ExitSub",
 };
 
@@ -119,16 +87,7 @@ static const char *StateNames[] = {
 
 static DriveHomeSubHSMState_t CurrentState = InitPSubState; // <- change name to match ENUM
 static uint8_t MyPriority;
-static uint8_t timerActive;
-static uint8_t zoneTrack;
-static uint8_t backRightToggled;
-static uint8_t backLeftToggled;
-static uint8_t frontRightTapeToggled;
-static uint8_t frontLeftTapeToggled;
-static uint8_t backRightBumpToggled;
-static uint8_t backLeftBumpToggled;
-static uint8_t frontTapeCrossed;
-static uint8_t track;
+
 
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
@@ -147,15 +106,6 @@ static uint8_t track;
 uint8_t InitDriveHomeSubHSM(void)
 {
     ES_Event returnEvent;
-    zoneTrack = 2;
-    backRightToggled = 0;
-    backLeftToggled = 0;
-    frontRightTapeToggled = 0;
-    frontLeftTapeToggled = 0;
-    backRightBumpToggled = 0;
-    backLeftBumpToggled = 0;
-    track = 0;
-    frontTapeCrossed = FALSE;
     CurrentState = InitPSubState;
     returnEvent = RunDriveHomeSubHSM(INIT_EVENT);
     if (returnEvent.EventType == ES_NO_EVENT) {
@@ -196,458 +146,43 @@ ES_Event RunDriveHomeSubHSM(ES_Event ThisEvent)
 
             // now put the machine into the actual initial state
             //track++;
-            nextState = OneState;
+            nextState = ReverseToWall;
             makeTransition = TRUE;
             ThisEvent.EventType = ES_NO_EVENT;
         }
     break;
-
-    case OneState: // in the first state, replace this with correct names
-        //rotate right 
-        switch (ThisEvent.EventType) {
-            //track++;
-        case ES_ENTRY:
-            printf("\r\n In one State of drive home state");
-            Reverse(75);
-            break;
-            
-        case REARRIGHT_TOGGLED:
-            nextState = BackRightBumpAdjustState;
-            makeTransition = TRUE;
-            ThisEvent.EventType = ES_NO_EVENT;
-            printf("\r\n BACK RIGHT HAS BEEN TOGGLED");
-        break;
-        
-        case REARLEFT_TOGGLED:
-            nextState = BackLeftBumpAdjustState;
-            makeTransition = TRUE;
-            ThisEvent.EventType = ES_NO_EVENT;
-        break;
-
-        case TAPE_TOGGLED:
-            if((ThisEvent.EventParam & (FRONTLEFTTAPE | FRONTRIGHTTAPE)) == (FRONTLEFTTAPE | FRONTRIGHTTAPE)){
-                zoneTrack = 2;
-                nextState = TwoState;
+    case ReverseToWall:
+        //printf("\r\n in reverse to wall");
+        ThisEvent = RunReverseToWallSubHSM(ThisEvent);
+        switch(ThisEvent.EventType){
+            case BACKBUMPERS_TOGGLED:
+                nextState = ReturnToLoad;
                 makeTransition = TRUE;
                 ThisEvent.EventType = ES_NO_EVENT;
-
-            } 
-            else if ((ThisEvent.EventParam & (FRONTLEFTTAPE)) == FRONTLEFTTAPE){
-                RightMotorSpeed(-50);
-                LeftMotorSpeed(0);
-//                frontLeftTapeToggled = TRUE;
-//                if (frontRightTapeToggled){
-//                    frontLeftTapeToggled = FALSE;
-//                    frontRightTapeToggled = FALSE;
-//                    zoneTrack = 2;
-//                    nextState = TwoState;
-//                    makeTransition = TRUE;
-//                    ThisEvent.EventType = ES_NO_EVENT;
-//                }
-//                
-
-            }
-            else if ((ThisEvent.EventParam & (FRONTRIGHTTAPE)) == FRONTRIGHTTAPE){
-                LeftMotorSpeed(-50);
-                RightMotorSpeed(0);
-                //                frontRightTapeToggled = TRUE;
-//                if (frontLeftTapeToggled){
-//                    frontLeftTapeToggled = FALSE;
-//                    frontRightTapeToggled = FALSE;
-//                    zoneTrack = 2;
-//                    nextState = TwoState;
-//                    makeTransition = TRUE;
-//                    ThisEvent.EventType = ES_NO_EVENT;
-//                }
-
-            }   
-            break;
-       
-        default: break;
-        }
-    break;
-    
-    case TwoState:
-        switch(ThisEvent.EventType){
-//            track++;
-            case ES_ENTRY:
-                Reverse(75);
-
                 
-            break;
-
-            case FRONTRIGHT_TOGGLED:
-            nextState = FrontRightBumpAdjustState;
-            makeTransition = TRUE;
-            ThisEvent.EventType = ES_NO_EVENT;
-
-            break;
-            case FRONTLEFT_TOGGLED:
-                nextState = FrontLeftBumpAdjustState;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-
-            break;
-            case REARRIGHT_TOGGLED:
-                if (zoneTrack == 0){
-                    nextState = ExitSub;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = LOAD_ZONE;
-                } else{
-                    nextState = BackRightBumpAdjustState;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
-                }
-                
-
-            break;
-            case REARLEFT_TOGGLED:
-                if (zoneTrack == 0){
-                    nextState = ExitSub;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = LOAD_ZONE;
-                } else{
-                    nextState = BackLeftBumpAdjustState;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
-                }
-                
-
-            break;
-            case TAPE_TOGGLED:
-                if ((ThisEvent.EventParam & (FRONTLEFTTAPE | FRONTRIGHTTAPE)) == (FRONTLEFTTAPE | FRONTRIGHTTAPE)){
-                    zoneTrack = 0;
-                }
-//                if((ThisEvent.EventParam & (FRONTLEFTTAPE | BOTLEFTTAPE)) == (FRONTLEFTTAPE | BOTLEFTTAPE)){
-//                    nextState = LeftTapeAdjustState;
-//                    makeTransition = TRUE;
-//                    ThisEvent.EventType = ES_NO_EVENT;
-//                }
-//                if((ThisEvent.EventParam & (FRONTRIGHTTAPE | BOTRIGHTTAPE)) == (FRONTRIGHTTAPE | BOTRIGHTTAPE)){
-//                    nextState = RightTapeAdjustState;
-//                    makeTransition = TRUE;
-//                    ThisEvent.EventType = ES_NO_EVENT;
-//                }
-                
-
-                if ((ThisEvent.EventParam & BOTLEFTTAPE) == BOTLEFTTAPE){
-                    nextState = BoundaryCheckLeft;
-                    ThisEvent.EventType = ES_NO_EVENT;
-                    makeTransition = TRUE;
-                }
-                if ((ThisEvent.EventParam & BOTRIGHTTAPE) == BOTRIGHTTAPE){
-                    nextState = BoundaryCheckRight;
-                    ThisEvent.EventType = ES_NO_EVENT;
-                    makeTransition = TRUE;
-                }
-            break;
-
-            default:break;
-        }   
-    break;
-
-    case FrontRightBumpAdjustState: // When front right bumper is toggled
-        //Stop();
-        //printf("\r\nFRONTRIGHT TOGGLED!!!\r\n");
-        switch(ThisEvent.EventType){
-//            track++;
-            case ES_ENTRY:
-                printf("\r\nFRONTRIGHT TOGGLED!!!\r\n");
-                Reverse(75);
-                ES_Timer_InitTimer(ENGAGE_TIMER, 500);
-            break;
-            case ES_TIMEOUT:
-                nextState = TwoState;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-                break;
-            default:break;
-        }
-        break;
-    break;
-    case FrontLeftBumpAdjustState: // When Front left bumper is toggled
-        switch(ThisEvent.EventType){
-//            track++;
-            case ES_ENTRY:
-                printf("\r\nFRONTLEFT TOGGLED!!!\r\n");
-                Reverse(75);
-                ES_Timer_InitTimer(ENGAGE_TIMER, 500);
-            break;
-            case ES_TIMEOUT:
-                nextState = TwoState;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-            break;
-            default:break;
-        }
-        break;
-    case BackRightBumpAdjustState: // When back right bumper is toggled
-        switch(ThisEvent.EventType){
-            case ES_ENTRY:
-                track++;
-                printf("\r\nBACKRIGHT TOGGLED!!!\r\n");
-                Forward(75);
-                ES_Timer_InitTimer(ENGAGE_TIMER, 500);
-            break;
-
-            case ES_TIMEOUT:
-                nextState = FrontTurnRightAdjust;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-            break;
-            default:break;
-        }
-        break;
-        
-    case FrontTurnRightAdjust:
-        switch(ThisEvent.EventType){
-            case ES_ENTRY:
-                track++;
-                TurnRight(50);
-                ES_Timer_InitTimer(ENGAGE_TIMER, 200);
-                break;
-            case ES_TIMEOUT:
-                if (zoneTrack == 0){
-                    nextState = LoadState;
-                }
-                if (zoneTrack == 1){
-                    nextState = OneState;
-                }
-                else{
-                    nextState = TwoState;
-                }
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
             break;
             default: break;
         }
     break;
-    case BackLeftBumpAdjustState: // When Back left bumper is toggled
+    case ReturnToLoad:
+        ThisEvent = RunReturnToLoadSubHSM(ThisEvent);
         switch(ThisEvent.EventType){
-            case ES_ENTRY:
-                track++;
-                printf("\r\nBACKLEFT TOGGLED!!!\r\n");
-                Forward(75);
-                ES_Timer_InitTimer(ENGAGE_TIMER, 500);
-            break;
-
-            case ES_TIMEOUT:
-                nextState = FrontTurnLeftAdjust;
+            case FRONTBUMPERS_TOGGLED:
+                nextState = ExitSub;
                 makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-            break;
-            default:break;
-        }
-        break;
-        
-    case FrontTurnLeftAdjust:
-        switch(ThisEvent.EventType){
-            case ES_ENTRY:
-                track++;
-                TurnLeft(50);
-                ES_Timer_InitTimer(ENGAGE_TIMER, 200);
-                break;
-            case ES_TIMEOUT:
-                if (zoneTrack == 0){
-                    nextState = LoadState;
-                }
-                if (zoneTrack == 1){
-                    nextState = OneState;
-                }
-                else{
-                    nextState = TwoState;
-                }
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
+                ThisEvent.EventType = LOAD_ZONE;
             break;
             default: break;
         }
-    break;
-    
-    case BoundaryCheckRight: // Moves the left side of the robot
-        switch(ThisEvent.EventType){
-            case ES_ENTRY:
-                track++;
-                LeftMotorSpeed(-50);
-                RightMotorSpeed(0);
-                printf("\r\n BOUNDARY RIGHT");
-                ES_Timer_InitTimer(ENGAGE_TIMER, 100);
-            break;
-            case ES_TIMEOUT:
-                nextState = RightTapeAdjustState;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-            break;
-            default:break;
-        }
-    break;
-    
-    case RightTapeAdjustState: // Adjust when right tape sensors are triggered
-        switch(ThisEvent.EventType){
-            case ES_ENTRY:
-                track++;
-                LeftMotorSpeed(0);
-                RightMotorSpeed(-100);
-                //LeftMotorSpeed(60);
-            break;
-            
-            case TAPE_TOGGLED:
-                if ((ThisEvent.EventParam & (FRONTLEFTTAPE | FRONTRIGHTTAPE)) == (FRONTLEFTTAPE | FRONTRIGHTTAPE)){
-                    zoneTrack = 0;
-                    nextState = TwoState;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
-                } 
-                if ((ThisEvent.EventParam & (BOTLEFTTAPE)) == (BOTLEFTTAPE)){
-                    nextState = LeftTapeAdjustState;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
-                }
-                else{
-                    nextState = TwoState;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
-                }
-            break;
-            
-            case FRONTRIGHT_TOGGLED:
-                nextState = FrontRightBumpAdjustState;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-
-            break;
-            case FRONTLEFT_TOGGLED:
-                nextState = FrontLeftBumpAdjustState;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-
-            break;
-            case REARRIGHT_TOGGLED:
-                nextState = BackRightBumpAdjustState;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-
-                
-            break;
-            case REARLEFT_TOGGLED:
-                nextState = BackLeftBumpAdjustState;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-            break;
-
-            default:
-
-            break;
-        }
-    break;
-
-    case BoundaryCheckLeft:
-        switch(ThisEvent.EventType){
-            case ES_ENTRY:
-                track++;
-                LeftMotorSpeed(0);
-                RightMotorSpeed(-50);
-                printf("\r\n BOUNDARY LEFT");
-                ES_Timer_InitTimer(ENGAGE_TIMER, 100);
-            break;
-            case ES_TIMEOUT:
-                nextState = LeftTapeAdjustState;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-            break;
-            default:break;
-        }
-    break;
-    
-    case LeftTapeAdjustState: // Adjust when right tape sensors are triggered
-        switch(ThisEvent.EventType){
-            case ES_ENTRY:
-                track++;
-                LeftMotorSpeed(-100);
-                RightMotorSpeed(0);
-            break;
-            case TAPE_TOGGLED:
-                if ((ThisEvent.EventParam & (FRONTLEFTTAPE | FRONTRIGHTTAPE)) == (FRONTLEFTTAPE | FRONTRIGHTTAPE)){
-                    zoneTrack = 0;
-                    nextState = TwoState;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
-                } 
-                
-                else if ((ThisEvent.EventParam & (FRONTLEFTTAPE)) == FRONTLEFTTAPE){
-                    frontLeftTapeToggled = TRUE;
-                    if (frontRightTapeToggled){
-                        frontLeftTapeToggled = FALSE;
-                        frontRightTapeToggled = FALSE;
-                        zoneTrack = 2;
-                        nextState = TwoState;
-                        makeTransition = TRUE;
-                        ThisEvent.EventType = ES_NO_EVENT;
-                    }
-                }
-                else if ((ThisEvent.EventParam & (FRONTRIGHTTAPE)) == FRONTRIGHTTAPE){
-                    frontRightTapeToggled = TRUE;
-                    if (frontLeftTapeToggled){
-                        frontLeftTapeToggled = FALSE;
-                        frontRightTapeToggled = FALSE;
-                        zoneTrack = 2;
-                        nextState = TwoState;
-                        makeTransition = TRUE;
-                        ThisEvent.EventType = ES_NO_EVENT;
-                    }
-                }
-                if ((ThisEvent.EventParam & (BOTRIGHTTAPE)) == (BOTRIGHTTAPE)){
-                    nextState = RightTapeAdjustState;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
-                }
-                else{
-                    nextState = TwoState;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
-                }
-            break;
-            
-            case FRONTRIGHT_TOGGLED:
-                nextState = FrontRightBumpAdjustState;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-
-            break;
-            case FRONTLEFT_TOGGLED:
-                nextState = FrontLeftBumpAdjustState;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-
-            break;
-            case REARRIGHT_TOGGLED:
-                nextState = BackRightBumpAdjustState;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-
-                
-            break;
-            case REARLEFT_TOGGLED:
-                nextState = BackLeftBumpAdjustState;
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-            break;
-
-            default:
-               
-            break;
-        }
-    break;
-
+        break;
     case ExitSub:
         if (ThisEvent.EventType == ES_ENTRY){ 
-            track++;
-            nextState = OneState;
+            
+//            
+            nextState = ReverseToWall;
             makeTransition = TRUE;
-            ThisEvent.EventType = ES_NO_EVENT;
+            ThisEvent.EventType = LOAD_ZONE;
             ES_Timer_StopTimer(ENGAGE_TIMER);
-            frontTapeCrossed = FALSE;
-            zoneTrack = 1;
         }
         break;
     default: // all unhandled states fall into here

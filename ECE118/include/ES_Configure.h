@@ -49,10 +49,9 @@ typedef enum {
     BATTERY_CONNECTED,
     BATTERY_DISCONNECTED,
     BUMPERNOTTOGGLED,
-    FRONTRIGHT_TOGGLED,
-    FRONTLEFT_TOGGLED,
-    REARRIGHT_TOGGLED,
-    REARLEFT_TOGGLED,
+    BUMPER_TOGGLED,
+            BACKBUMPERS_TOGGLED,
+            FRONTBUMPERS_TOGGLED,
     TAPENOTTOGGLED,
     RIGHTTAPE_TOGGLED, // If the the right tape sensors are detected
     LEFTTAPE_TOGGLED, // If the left tape sensors are detected
@@ -77,6 +76,7 @@ typedef enum {
     OUTOFAMMO, // When all shots have been fired
     INTO_LIGHT,
     INTO_DARK,
+            SKIPNAVIGATELOAD,
 	/* User-defined events end here */
     NUMBEROFEVENTS,
 } ES_EventTyp_t;
@@ -95,10 +95,9 @@ static const char *EventNames[] = {
 	"BATTERY_CONNECTED",
 	"BATTERY_DISCONNECTED",
 	"BUMPERNOTTOGGLED",
-	"FRONTRIGHT_TOGGLED",
-	"FRONTLEFT_TOGGLED",
-	"REARRIGHT_TOGGLED",
-	"REARLEFT_TOGGLED",
+	"BUMPER_TOGGLED",
+	"BACKBUMPERS_TOGGLED",
+	"FRONTBUMPERS_TOGGLED",
 	"TAPENOTTOGGLED",
 	"RIGHTTAPE_TOGGLED",
 	"LEFTTAPE_TOGGLED",
@@ -123,6 +122,7 @@ static const char *EventNames[] = {
 	"OUTOFAMMO",
 	"INTO_LIGHT",
 	"INTO_DARK",
+	"SKIPNAVIGATELOAD",
 	"NUMBEROFEVENTS",
 };
 
@@ -130,12 +130,12 @@ static const char *EventNames[] = {
 
 /****************************************************************************/
 // This are the name of the Event checking function header file.
-#define EVENT_CHECK_HEADER "DriveBase.h"
-//#define EVENT_CHECK_HEADER "ES_Configure.h"
+//#define EVENT_CHECK_HEADER "DriveBase.h"
+#define EVENT_CHECK_HEADER "ES_Configure.h"
 /****************************************************************************/
 // This is the list of event checking functions
 //#define EVENT_CHECK_LIST  BumperCheck, lightCheck, CheckBattery
-#define EVENT_CHECK_LIST GoalDetection, GoalieDetection
+#define EVENT_CHECK_LIST
 /****************************************************************************/
 // These are the definitions for the post functions to be executed when the
 // corresponding timer expires. All 16 must be defined. If you are not using
@@ -143,12 +143,12 @@ static const char *EventNames[] = {
 #define TIMER_UNUSED ((pPostFunc)0)
 #define TIMER0_RESP_FUNC PostMainHSM
 #define TIMER1_RESP_FUNC PostMainHSM
-#define TIMER2_RESP_FUNC PostSensorService
+#define TIMER2_RESP_FUNC PostTapeService
 //#define TIMER2_RESP_FUNC TIMER_UNUSED
 #define TIMER3_RESP_FUNC PostMainHSM
 #define TIMER4_RESP_FUNC PostMainHSM
-#define TIMER5_RESP_FUNC TIMER_UNUSED
-#define TIMER6_RESP_FUNC TIMER_UNUSED
+#define TIMER5_RESP_FUNC PostBumperService
+#define TIMER6_RESP_FUNC PostBeaconService
 #define TIMER7_RESP_FUNC TIMER_UNUSED
 #define TIMER8_RESP_FUNC TIMER_UNUSED
 #define TIMER9_RESP_FUNC TIMER_UNUSED
@@ -171,9 +171,11 @@ static const char *EventNames[] = {
 //#define DRIVE_TIMER 1
 #define ENGAGE_TIMER 0 // timer for the drive state
 #define ROTATE_TIMER 1 // timer for the rotate state
-#define SENSOR_SERVICE_TIMER 2 // timer for the sensor service
+#define TAPE_SERVICE_TIMER 2 // timer for the sensor service
 #define CHARGE_TIMER 3
 #define FIRE_TIMER 4
+#define BUMPER_SERVICE_TIMER 5
+#define BEACON_SERVICE_TIMER 6
 /****************************************************************************/
 // The maximum number of services sets an upper bound on the number of 
 // services that the framework will handle. Reasonable values are 8 and 16
@@ -183,7 +185,7 @@ static const char *EventNames[] = {
 /****************************************************************************/
 // This macro determines that nuber of services that are *actually* used in
 // a particular application. It will vary in value from 1 to MAX_NUM_SERVICES
-#define NUM_SERVICES 3
+#define NUM_SERVICES 5
 //#define NUM_SERVICES 2
 
 /****************************************************************************/
@@ -244,11 +246,11 @@ static const char *EventNames[] = {
 
 #if NUM_SERVICES > 2
 // the header file with the public fuction prototypes
-#define SERV_2_HEADER "SensorService.h"
+#define SERV_2_HEADER "TapeService.h"
 // the name of the Init function
-#define SERV_2_INIT InitSensorService
+#define SERV_2_INIT InitTapeService
 // the name of the run function
-#define SERV_2_RUN RunSensorService
+#define SERV_2_RUN RunTapeService
 // How big should this services Queue be?
 #define SERV_2_QUEUE_SIZE 3
 #endif
@@ -259,11 +261,11 @@ static const char *EventNames[] = {
 // These are the definitions for Service 3
 #if NUM_SERVICES > 3
 // the header file with the public fuction prototypes
-#define SERV_3_HEADER "TestService.h"
+#define SERV_3_HEADER "BumperService.h"
 // the name of the Init function
-#define SERV_3_INIT TestServiceInit
+#define SERV_3_INIT InitBumperService
 // the name of the run function
-#define SERV_3_RUN TestServiceRun
+#define SERV_3_RUN RunBumperService
 // How big should this services Queue be?
 #define SERV_3_QUEUE_SIZE 3
 #endif
@@ -272,11 +274,11 @@ static const char *EventNames[] = {
 // These are the definitions for Service 4
 #if NUM_SERVICES > 4
 // the header file with the public fuction prototypes
-#define SERV_4_HEADER "TestService.h"
+#define SERV_4_HEADER "BeaconService.h"
 // the name of the Init function
-#define SERV_4_INIT TestServiceInit
+#define SERV_4_INIT InitBeaconService
 // the name of the run function
-#define SERV_4_RUN TestServiceRun
+#define SERV_4_RUN RunBeaconService
 // How big should this services Queue be?
 #define SERV_4_QUEUE_SIZE 3
 #endif

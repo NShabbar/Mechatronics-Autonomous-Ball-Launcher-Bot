@@ -30,6 +30,16 @@ BOTTRACK: W8
 
 */
 
+#define FRONTRIGHTTAPE 1
+#define FRONTLEFTTAPE 2
+#define REARRIGHTTAPE 4
+#define REARLEFTTAPE 8
+
+#define FRONTRIGHTBUMP 1
+#define FRONTLEFTBUMP 2
+#define REARRIGHTBUMP 4
+#define REARLEFTBUMP 8
+
 void DriveBase_Init(void);
 
 char LeftMotorSpeed(char newSpeed);
@@ -58,19 +68,9 @@ uint8_t ReadBotRightBumper(void);
 
 uint8_t ReadBotLeftBumper(void);
 
-uint8_t ReadTopRightTape(void);
-
-uint8_t ReadTopLeftTape(void);
-
-uint8_t ReadBotRightTape(void);
-
-uint8_t ReadBotLeftTape(void);
+uint8_t ReadBumpers(void);
 
 uint8_t ReadTapeSensors(void);
-
-uint8_t ReadTopTrack(void);
-
-uint8_t ReadBotTrack(void);
 
 uint8_t BorderDetection(void);
 

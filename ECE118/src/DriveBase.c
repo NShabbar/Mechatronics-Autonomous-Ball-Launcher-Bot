@@ -21,20 +21,20 @@
 #define RIGHT_ENABLE PIN4 // port x
 
 // Define the firing motor
-#define FLYWHEEL_IN1 PIN6 //portz
+#define FLYWHEEL_IN1 PIN7 //portz
 #define FLYWHEEL_IN2 PIN8 //port z
 
 //#define FLYWHEEL_IN2 RC_PORTY06
-#define FLYWHEEL_ENABLE PIN5 // port x
+#define FLYWHEEL_ENABLE PWM_PORTZ06 // port x
 
 // Define firing mechanism
-#define FIREMECH RC_PORTW07  // port x
+#define FIREMECH RC_PORTW08  // port x
 
 // Define the bumpers port v
-#define TOPRIGHTBUMP_V3 AD_PORTV3
-#define TOPLEFTBUMP_V4 AD_PORTV4
-#define BOTRIGHTBUMP_V5 AD_PORTV5
-#define BOTLEFTBUMP_V6 AD_PORTV6
+#define TOPRIGHTBUMP_V3 PORTV03_BIT
+#define TOPLEFTBUMP_V4 PORTV04_BIT
+#define BOTRIGHTBUMP_V5 PORTV05_BIT
+#define BOTLEFTBUMP_V6 PORTV06_BIT
 
 // Define the tape & track sensors port w
 //#define TOPRIGHTTAPE_W3 AD_PORTW3
@@ -52,15 +52,15 @@
 //#define BOTTRACK_W8 AD_PORTW8
 
 // Define the beacon sensors
-#define GOAL_V7 AD_PORTV8
-#define GOALIE_V8 AD_PORTV7
+#define GOAL_V7 AD_PORTV7
+#define GOALIE_V8 AD_PORTV8
 
 // Define the max speed
 #define MAX_SPEED 100
 #define BEACON_HI_THRESH 800 // ARBITRARY ACTUALLY TEST THIS SHIT
 #define BEACON_LO_THRESH 750 // ARBITRARY ACTUALLY TEST THIS SHIT
-#define GOALIE_HI_THRESH 620
-#define GOALIE_LO_THRESH 590
+#define GOALIE_HI_THRESH 730 //730 original
+#define GOALIE_LO_THRESH 580 // 580 original
 
 static unsigned int zoneTrackFront = 0;
 static unsigned int zoneTrackBack = 0;
@@ -80,10 +80,16 @@ void DriveBase_Init(void){
     PWM_AddPins(RIGHT_FORWARD_IN3);
     PWM_AddPins(RIGHT_REVERSE_IN4);
     PWM_AddPins(PWM_PORTZ06); // new fly wheel port?
-    AD_AddPins(TOPRIGHTBUMP_V3);
-    AD_AddPins(TOPLEFTBUMP_V4);
-    AD_AddPins(BOTRIGHTBUMP_V5);
-    AD_AddPins(BOTLEFTBUMP_V6);
+    
+    IO_PortsSetPortInputs(PORTV, PIN3);
+    IO_PortsSetPortInputs(PORTV, PIN4);
+    IO_PortsSetPortInputs(PORTV, PIN5);
+    IO_PortsSetPortInputs(PORTV, PIN6);
+    
+//    AD_AddPins(TOPRIGHTBUMP_V3);
+//    AD_AddPins(TOPLEFTBUMP_V4);
+//    AD_AddPins(BOTRIGHTBUMP_V5);
+//    AD_AddPins(BOTLEFTBUMP_V6);
     IO_PortsSetPortInputs(PORTW, PIN3);
     IO_PortsSetPortInputs(PORTW, PIN4);
     IO_PortsSetPortInputs(PORTW, PIN5);
@@ -106,7 +112,7 @@ void DriveBase_Init(void){
 //    IO_PortsSetPortOutputs(PORTY, PIN8); // SOLENOID in2
     IO_PortsSetPortOutputs(PORTX, PIN11);
     //
-    RC_AddPins(RC_PORTW07);
+    RC_AddPins(FIREMECH);
     //Set the enable pins for all motors high 
     IO_PortsSetPortBits(PORTX, LEFT_ENABLE); 
     IO_PortsSetPortBits(PORTX, RIGHT_ENABLE);
@@ -207,7 +213,7 @@ char Forward(char newSpeed){
     if (newSpeed > 100 || newSpeed < 0){
         return (ERROR);
     }
-    //printf("\r\n going forward \r\n");
+    printf("\r\n going forward \r\n");
     RightMotorSpeed(newSpeed);
     LeftMotorSpeed(newSpeed);
     return (SUCCESS);
@@ -252,7 +258,7 @@ char Charge(char newSpeed){
         IO_PortsClearPortBits(PORTZ,FLYWHEEL_IN1);
         IO_PortsClearPortBits(PORTZ,FLYWHEEL_IN2);
     }*/
-    PWM_SetDutyCycle(PWM_PORTZ06, newSpeed*(MAX_PWM/MAX_SPEED));
+    PWM_SetDutyCycle(FLYWHEEL_ENABLE, newSpeed*(MAX_PWM/MAX_SPEED));
     IO_PortsClearPortBits(PORTZ,FLYWHEEL_IN2);
     //PWM_SetDutyCycle(FLYWHEEL_IN1, newSpeed);
     //printf("Charged has been called\r\n");
@@ -270,7 +276,7 @@ char Charge(char newSpeed){
 
 char Fire(int newSpeed){
 //    IO_PortsSetPortOutputs(PORTX, FIREMECH);
-    printf("\r\n FIRED\r\n");
+    //printf("\r\n FIRED\r\n");
     if (newSpeed < 0 || newSpeed > 100){
         return (ERROR);
     }
@@ -302,70 +308,36 @@ char Stop(void){
     printf("\r\n Stop has been called\r\n");
     RightMotorSpeed(0);
     LeftMotorSpeed(0);
-    Fire(0);
+    //Fire(0);
     return (SUCCESS);
 }
 
-/**
- * @brief Reads the top right bumper
- * 
- * @param  none
- * 
- * @return True or False
- */
-uint8_t ReadTopRightBumper(void){
-    //printf("\r\nTop Right bumper checker called\r\n");
+
+uint8_t ReadBumpers(void){
     static ES_EventTyp_t lastEvent = BUMPERNOTTOGGLED;
+    static uint8_t prevBumpers;
     uint8_t returnVal = FALSE;
     ES_EventTyp_t curEvent;
-    ES_Event thisEvent;
+    static ES_Event thisEvent;
+    //printf("\r\n BUMPERS HAS BEEN CALLED");
     
-    unsigned int rawVal = AD_ReadADPin(TOPRIGHTBUMP_V3);
-    //printf("\r\n Raw value of top bumper: %u\r\n",rawVal);
-    if (rawVal > 900){
-        curEvent = FRONTRIGHT_TOGGLED;
-    } else{
-        curEvent = BUMPERNOTTOGGLED;
-    }
-    if (curEvent != lastEvent){
-        thisEvent.EventType = curEvent;
-        thisEvent.EventParam = rawVal;
-        returnVal = TRUE;
-        lastEvent = curEvent;
-
-#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
-        PostMainHSM(thisEvent);
-#else
-        SaveEvent(thisEvent);
-#endif
-    }
-    return (returnVal);
-}
-
-
-/**
- * @brief Reads the top left bumper
- * 
- * @param  none
- * 
- * @return True or False
- */
-uint8_t ReadTopLeftBumper(void){
-    static ES_EventTyp_t lastEvent = BUMPERNOTTOGGLED;
-    uint8_t returnVal = FALSE;
-    ES_EventTyp_t curEvent;
-    ES_Event thisEvent;
+//    #define TOPRIGHTBUMP_V3 PORTV03_BIT
+//#define TOPLEFTBUMP_V4 PORTV04_BIT
+//#define BOTRIGHTBUMP_V5 PORTV05_BIT
+//#define BOTLEFTBUMP_V6 PORTV06_BIT
     
-    unsigned int rawVal = AD_ReadADPin(TOPLEFTBUMP_V4);
-    if (rawVal > 900){
-        curEvent = FRONTLEFT_TOGGLED;
-    } else{
-        curEvent = BUMPERNOTTOGGLED;
-    }
-    if (curEvent != lastEvent){
-        thisEvent.EventType = curEvent;
-        thisEvent.EventParam = rawVal;
-        lastEvent = curEvent;
+    // 1-> top right bump
+    // 2-> top left bump
+    // 3-> bot right bump
+    // 4-> bot left bump
+    uint8_t curBumpers;
+    curBumpers = (!TOPRIGHTBUMP_V3 | !TOPLEFTBUMP_V4<<1 | !BOTRIGHTBUMP_V5 << 2| !BOTLEFTBUMP_V6 << 3);
+    //printf("\r\n Total Bumpers: %u\r\n", curBumpers);
+    if(curBumpers != prevBumpers){
+        printf("\r\n BUMPER HAS BEEN TOGGLED: %u", curBumpers);
+        thisEvent.EventType = BUMPER_TOGGLED;
+        thisEvent.EventParam = curBumpers;
+        prevBumpers = curBumpers;
         returnVal = TRUE;
 #ifndef EVENTCHECKER_TEST           // keep this as is for test harness
         PostMainHSM(thisEvent);
@@ -373,257 +345,8 @@ uint8_t ReadTopLeftBumper(void){
         SaveEvent(thisEvent);
 #endif
     }
-    return (returnVal);
+    return(returnVal);
 }
-
-
-/**
- * @brief Reads the bot right bumper
- * 
- * @param  none
- * 
- * @return True or False
- */
-uint8_t ReadBotRightBumper(void){
-    static ES_EventTyp_t lastEvent = BUMPERNOTTOGGLED;
-    uint8_t returnVal = FALSE;
-    ES_EventTyp_t curEvent;
-    ES_Event thisEvent;
-    unsigned int rawVal = AD_ReadADPin(BOTRIGHTBUMP_V5);
-    if (rawVal > 900){
-        curEvent = REARRIGHT_TOGGLED;
-    } else{
-        curEvent = BUMPERNOTTOGGLED;
-    }
-    if (curEvent != lastEvent){
-        thisEvent.EventType = curEvent;
-        thisEvent.EventParam = rawVal;
-        lastEvent = curEvent;
-        returnVal = TRUE;
-#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
-        PostMainHSM(thisEvent);
-#else
-        SaveEvent(thisEvent);
-#endif
-    }
-    return (returnVal);
-}
-
-
-
-/**
- * @brief Reads the top left bumper
- * 
- * @param  none
- * 
- * @return True or False
- */
-uint8_t ReadBotLeftBumper(void){
-    static ES_EventTyp_t lastEvent = BUMPERNOTTOGGLED;
-    uint8_t returnVal = FALSE;
-    ES_EventTyp_t curEvent;
-    ES_Event thisEvent;
-    unsigned int rawVal = AD_ReadADPin(BOTLEFTBUMP_V6);
-    if (rawVal > 900){
-        curEvent = REARLEFT_TOGGLED;
-    } else{
-        curEvent = BUMPERNOTTOGGLED;
-    }
-    if (curEvent != lastEvent){
-        thisEvent.EventType = curEvent;
-        thisEvent.EventParam = rawVal;
-        returnVal = TRUE;
-        lastEvent = curEvent;
-
-#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
-        PostMainHSM(thisEvent);
-#else
-        SaveEvent(thisEvent);
-#endif
-    }
-    return (returnVal);
-}
-
-
-///**
-// * @brief Reads the top right tape sensor
-// * 
-// * @param  none
-// * 
-// * @return True or False
-// */
-//uint8_t ReadTopRightTape(void){
-//    unsigned int rawVal = AD_ReadADPin(TOPRIGHTTAPE_W3);
-//    if (rawVal > 1000){
-//        return TRUE;
-//    } else{
-//        return FALSE;
-//    }
-//    /*
-//    static ES_EventTyp_t lastEvent = TAPENOTTOGGLED;
-//    uint8_t returnVal = FALSE;
-//    ES_EventTyp_t curEvent;
-//    ES_Event thisEvent;
-//    unsigned int rawVal = AD_ReadADPin(TOPRIGHTTAPE_W3);
-//    //printf("TopRight Tape: %u\r\n", rawVal);
-//
-//    if (rawVal > 1000){
-//        curEvent = RIGHTTAPE_TOGGLED;
-//        returnVal = TRUE;
-//    } else{
-//        curEvent = TAPENOTTOGGLED;
-//        returnVal = FALSE;
-//    }
-//    
-//    if (curEvent != lastEvent){
-//        thisEvent.EventType = curEvent;
-//        thisEvent.EventParam = rawVal;
-//        //returnVal = TRUE;
-//        lastEvent = curEvent;
-//
-//#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
-//        PostMainHSM(thisEvent);
-//#else
-//        SaveEvent(thisEvent);
-//#endif
-//    }
-//    */
-//}
-//
-//
-///**
-// * @brief Reads the top left tape sensor
-// * 
-// * @param  none
-// * 
-// * @return True or False
-// */
-//uint8_t ReadTopLeftTape(void){
-//    unsigned int rawVal = AD_ReadADPin(TOPLEFTTAPE_W4);
-//    if (rawVal > 1000){
-//        return TRUE;
-//    } else{
-//        return FALSE;
-//    }
-//    /*
-//    static ES_EventTyp_t lastEvent = TAPENOTTOGGLED;
-//    uint8_t returnVal = FALSE;
-//    ES_EventTyp_t curEvent;
-//    ES_Event thisEvent;
-//    unsigned int rawVal = AD_ReadADPin(TOPLEFTTAPE_W4);
-//    //printf("TopLeft Tape: %u\r\n", rawVal);
-//
-//    if (rawVal > 1000){
-//        curEvent = LEFTTAPE_TOGGLED;
-//        returnVal = TRUE;
-//    } else{
-//        curEvent = TAPENOTTOGGLED;
-//        returnVal = FALSE;
-//    }
-//    if (curEvent != lastEvent){
-//        thisEvent.EventType = curEvent;
-//        thisEvent.EventParam = rawVal;
-//        //returnVal = TRUE;
-//        lastEvent = curEvent;
-//
-//#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
-//        PostMainHSM(thisEvent);
-//#else
-//        SaveEvent(thisEvent);
-//#endif
-//    }
-//     * */
-//}
-//
-//
-///**
-// * @brief Reads the bot right tape sensor
-// * 
-// * @param  none
-// * 
-// * @return True or False
-// */
-//uint8_t ReadBotRightTape(void){
-//    unsigned int rawVal = AD_ReadADPin(BOTRIGHTTAPE_W5);
-//    if (rawVal > 1000){
-//        return TRUE;
-//    } else{
-//        return FALSE;
-//    }
-//    /*
-//    static ES_EventTyp_t lastEvent = TAPENOTTOGGLED;
-//    uint8_t returnVal = FALSE;
-//    ES_EventTyp_t curEvent;
-//    ES_Event thisEvent;
-//    unsigned int rawVal = AD_ReadADPin(BOTRIGHTTAPE_W5);
-//    //printf("BotRight Tape: %u\r\n", rawVal);
-//
-//    if (rawVal > 1000){
-//        curEvent = RIGHTTAPE_TOGGLED;
-//        returnVal = TRUE;
-//    } else{
-//        curEvent = TAPENOTTOGGLED;
-//        returnVal = FALSE;
-//    }
-//    if (curEvent != lastEvent){
-//        thisEvent.EventType = curEvent;
-//        thisEvent.EventParam = rawVal;
-//        returnVal = TRUE;
-//        lastEvent = curEvent;
-//
-//#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
-//        PostMainHSM(thisEvent);
-//#else
-//        SaveEvent(thisEvent);
-//#endif
-//    }
-//     * */
-//}
-// 
-//
-///**
-// * @brief Reads the bot left tape sensor
-// * 
-// * @param  none
-// * 
-// * @return True or False
-// */
-//uint8_t ReadBotLeftTape(void){
-//    unsigned int rawVal = AD_ReadADPin(BOTLEFTTAPE_W6);
-//    if (rawVal > 1000){
-//        return TRUE;
-//    } else{
-//        return FALSE;
-//    }
-//    /*
-//    static ES_EventTyp_t lastEvent = TAPENOTTOGGLED;
-//    ES_EventTyp_t curEvent;
-//    uint8_t returnVal = FALSE;
-//    ES_Event thisEvent;
-//    unsigned int rawVal = AD_ReadADPin(BOTLEFTTAPE_W6);
-//    //printf("BotLeft Tape: %u\r\n", rawVal);
-//    if (rawVal > 1000){
-//        curEvent = LEFTTAPE_TOGGLED;
-//        returnVal = TRUE;
-//    } else{
-//        curEvent = TAPENOTTOGGLED;
-//        returnVal = FALSE;
-//    }
-//    if (curEvent != lastEvent){
-//        thisEvent.EventType = curEvent;
-//        thisEvent.EventParam = rawVal;
-//        returnVal = TRUE;
-//        lastEvent = curEvent;
-//
-//#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
-//        PostMainHSM(thisEvent);
-//#else
-//        SaveEvent(thisEvent);
-//#endif
-//    }
-//     * */
-//}
-
 
 uint8_t ReadTapeSensors(void){
     static ES_EventTyp_t lastEvent;
@@ -639,15 +362,7 @@ uint8_t ReadTapeSensors(void){
     uint8_t totalTape;
     totalTape = (TOPRIGHTTAPE_W3 | TOPLEFTTAPE_W4<<1 | BOTRIGHTTAPE_W5 << 2| BOTLEFTTAPE_W6 << 3);
     //printf("\r\n Total Tape: %u\r\n", totalTape);
-//    if (totalTape != thisEvent.EventParam){
-//        curEvent = TAPE_TOGGLED;
-//    } else{
-//        curEvent = TAPENOTTOGGLED;
-//    }
-//    if(TOPRIGHTTAPE_W3){
-//        printf("\r\b top right tape toggled1");
-//    }
-
+    
     if(totalTape != prevTape){
         thisEvent.EventType = TAPE_TOGGLED;
         thisEvent.EventParam = totalTape;
@@ -664,75 +379,6 @@ uint8_t ReadTapeSensors(void){
     
     
 }
-
-/**
- * @brief Reads the top track wire sensor
- * 
- * @param  none
- * 
- * @return True or False
- */
-//uint8_t ReadTopTrack(void){
-//    static ES_EventTyp_t lastEvent = TRACKNOTTOGGLED;
-//    ES_EventTyp_t curEvent;
-//    ES_Event thisEvent;
-//    uint8_t returnVal = FALSE;
-//    unsigned int rawVal = AD_ReadADPin(TOPTRACK_W7);
-//    //printf("\r\n track wire adc value!: %u \r\n", rawVal);
-//    if(rawVal > 700){
-//        curEvent = TOPTRACK_TOGGLED;
-//        //printf("\r\nI SMELL TRACK \r\n");
-//    } else{
-//        curEvent = TRACKNOTTOGGLED;
-//        //printf("\r\nI Dont see shit!\r\n");
-//    }
-//    if (curEvent != lastEvent){
-//        thisEvent.EventType = curEvent;
-//        thisEvent.EventParam = rawVal;
-//        returnVal = TRUE;
-//        lastEvent = curEvent;
-//
-//#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
-//        PostMainHSM(thisEvent);
-//#else
-//        SaveEvent(thisEvent);
-//#endif
-//    }
-//    return returnVal;
-//}
-
-/**
- * @brief Reads the bot track wire sensor
- * 
- * @param  none
- * 
- * @return True or False
- */
-//uint8_t ReadBotTrack(void){
-//    static ES_EventTyp_t lastEvent = TRACKNOTTOGGLED;
-//    ES_EventTyp_t curEvent;
-//    ES_Event thisEvent;
-//    uint8_t returnVal = FALSE;
-//    unsigned int rawVal = AD_ReadADPin(BOTTRACK_W8);
-//    if (rawVal > 1000){
-//        curEvent = BOTTRACK_TOGGLED;
-//    } else{
-//        curEvent = TRACKNOTTOGGLED;
-//    }
-//    if (curEvent != lastEvent){
-//        thisEvent.EventType = curEvent;
-//        thisEvent.EventParam = rawVal;
-//        returnVal = TRUE;
-//        lastEvent = curEvent;
-//
-//#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
-//        PostMainHSM(thisEvent);
-//#else
-//        SaveEvent(thisEvent);
-//#endif
-//    }
-//    return returnVal;
-//}
 
 // This function performs the goal detection
 uint8_t GoalDetection(void){
@@ -808,77 +454,8 @@ uint8_t GoalieDetection(void){
     return (returnVal);
 }
 
-/**
- * @brief Runs all of the tape detection to determine whether bot is on border
- * 
- * @param  none
- * 
- * @return True if detected something, returns false if it didnt
-// */
-//uint8_t BorderDetection(void){
-//    static ES_EventTyp_t lastEvent = TAPENOTTOGGLED;
-//    uint8_t returnVal = FALSE;
-//    ES_EventTyp_t curEvent;
-//    ES_Event thisEvent;
-//
-//    if(!ReadTopRightTape() && !ReadTopLeftTape() && ReadBotRightTape() && ReadBotLeftTape()){
-//        //printf("Crossed a zone front side\r\n");
-//        curEvent = BACKTAPE_TOGGLED;
-//    }
-////    } else if (ReadTopRightTape() && ReadBotRightTape() && !ReadTopLeftTape() && !ReadBotLeftTape()){
-////        //printf("Border detected on the right side \r\n");
-////        curEvent = RIGHTTAPE_TOGGLED;
-////    } else if (ReadTopLeftTape() && ReadBotLeftTape() && !ReadTopRightTape() && !ReadBotRightTape()){
-////        //printf("Border detected on the left side \r\n");
-////        curEvent = LEFTTAPE_TOGGLED;  
-//    else if (!ReadBotRightTape() && !ReadBotLeftTape() && ReadTopLeftTape() && ReadTopRightTape()){
-//        //printf("Crossed a zone back side\r\n");
-//        curEvent = FRONTTAPE_TOGGLED;
-//    } 
-//    else if (ReadTopRightTape() && !(ReadTopLeftTape() && ReadBotRightTape() && ReadBotLeftTape())){
-//        curEvent = FRONTRIGHTTAPE_TOGGLED;
-//    } 
-//    else if (ReadTopLeftTape() && !(ReadTopRightTape() && ReadBotRightTape() && ReadBotLeftTape())){
-//        curEvent = FRONTLEFTTAPE_TOGGLED;
-//    }  
-//    else if (ReadBotLeftTape() && !(ReadTopLeftTape() && ReadTopRightTape() && ReadBotRightTape())){
-//        
-//        curEvent = REARLEFTTAPE_TOGGLED;
-//    } 
-//    else if(ReadBotRightTape() && !(ReadBotLeftTape() && ReadTopRightTape() && ReadTopLeftTape())){
-//        curEvent = REARRIGHTTAPE_TOGGLED;
-//    }
-//    else{
-//        //printf("No crossover \r\n");
-//        curEvent = TAPENOTTOGGLED;
-//    }
-//    
-//    if (curEvent != lastEvent){
-//        thisEvent.EventType = curEvent;
-//        thisEvent.EventParam = zoneTrackBack;
-//        returnVal = TRUE;
-//        lastEvent = curEvent;
-//
-//#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
-//        PostMainHSM(thisEvent);
-//#else
-//        SaveEvent(thisEvent);
-//#endif
-//    }
-//    return returnVal;
-//}
 
-unsigned char ReadBumpers(void){
-    static ES_EventTyp_t lastEvent;
-    uint8_t returnVal = FALSE;
-    ES_EventTyp_t curEvent;
-    static ES_Event thisEvent;
-    
-    uint8_t TOPRIGHTBUMP = ReadTopRightBumper();
-    uint8_t TOPLEFTBUMP = ReadTopLeftBumper();
-    uint8_t REARRIGHTBUMP = ReadBotRightBumper();
-    uint8_t REARLEFTBUMP = ReadBotLeftBumper();
-}
+
 
 #ifdef DRIVEBASE_TEST
 #include <xc.h>

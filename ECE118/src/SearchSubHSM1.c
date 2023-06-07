@@ -141,11 +141,14 @@ ES_Event RunSearchSubHSM(ES_Event ThisEvent)
         //rotate right 
         RightMotorSpeed(75);
         LeftMotorSpeed(-75);
+        //printf("\r\n in rotate state");
         switch (ThisEvent.EventType) {
+            case ES_ENTRY:
+            break;
         case GOAL_DETECTED:
             nextState = ExitSub;
             makeTransition = TRUE;
-            Stop();
+            ThisEvent.EventType = GOAL_DETECTED;
             break;
      
         default: break;
@@ -154,7 +157,6 @@ ES_Event RunSearchSubHSM(ES_Event ThisEvent)
         
     case ExitSub:
         if (ThisEvent.EventType == ES_ENTRY){
-            Stop();
             nextState = RotateState;
             makeTransition = TRUE;
             ThisEvent.EventType = GOAL_DETECTED;
